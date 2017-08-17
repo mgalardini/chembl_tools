@@ -1,7 +1,7 @@
 chembl_tools
 ============
 
-A series of scripts to make the most of the (ChEMBL API)[https://github.com/chembl/chembl_webresource_client].
+A series of scripts to make the most of the [ChEMBL API](https://github.com/chembl/chembl_webresource_client)
 
 prerequisites
 -------------
