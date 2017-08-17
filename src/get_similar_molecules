@@ -1,0 +1,52 @@
+#!/usr/bin/env python
+
+class Range(object):
+    def __init__(self, start, end):
+        self.start = start
+        self.end = end
+    def __eq__(self, other):
+        return self.start <= other <= self.end
+
+def get_options():
+    import argparse
+
+    description = 'Retrieve similar molecules from CHEMBL IDs'
+    parser = argparse.ArgumentParser(description=description,
+                                     prog='get_similar_molecules')
+
+    parser.add_argument('chembl', action='store',
+                        help='Chembl IDs input file [name -> chembl id]')
+    
+    parser.add_argument('--similarity', action='store',
+                        type=int,
+                        metavar='[0, 100]',
+                        choices=[Range(0, 100)],
+                        default=0.9,
+                        help='Similarity threshold [Default: 90%]')
+
+    return parser.parse_args()
+
+if __name__ == "__main__":
+    options = get_options()
+
+    import sys
+    if sys.version[0] != '2':
+        sys.stderr.write('Python version 2 is required\n')
+        sys.exit(1)
+
+    from chembl_webresource_client.new_client import new_client
+    
+    similarity = new_client.similarity
+    
+    print('\t'.join(('query', 'target')))
+    header = True
+    for name, chembl in [(x.split('\t')[0], x.rstrip().split('\t')[1])
+                         for x in open(options.chembl)]:
+        if header:
+            header = False
+            continue
+        res = similarity.filter(chembl_id=chembl, similarity=options.similarity)
+        for entry in res:
+            if entry['molecule_chembl_id'] == chembl:
+                continue
+            print('\t'.join((chembl, entry['molecule_chembl_id'])))

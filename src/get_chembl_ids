@@ -1,0 +1,44 @@
+#!/usr/bin/env python
+
+def get_options():
+    import argparse
+
+    description = 'Retrieve IDs from CHEMBL IDs'
+    parser = argparse.ArgumentParser(description=description,
+                                     prog='get_chembl_ids.py')
+
+    parser.add_argument('compounds', action='store',
+                        help='Compound names input file')
+
+    return parser.parse_args()
+
+def inspect_synonyms(entry, term):
+    return term.lower() in {x['molecule_synonym'].lower()
+                            for x in entry['molecule_synonyms']}
+
+if __name__ == "__main__":
+    options = get_options()
+
+    import sys
+    if sys.version[0] != '2':
+        sys.stderr.write('Python version 2 is required\n')
+        sys.exit(1)
+    
+    from chembl_webresource_client.new_client import new_client
+    
+    molecule = new_client.molecule
+    print('\t'.join(('name', 'chembl')))
+    for compound in sorted({x.rstrip()
+                            for x in open(options.compounds)}):
+        res = molecule.filter(pref_name__iexact=compound)
+        if len(res) == 0:
+            sys.stderr.write('Found no exact match for "%s", trying a search\n' % compound)
+            res = molecule.search(compound)
+            res = [x for x in res
+                   if inspect_synonyms(x, compound)]
+            if len(res) == 0:
+                sys.stderr.write('Found no match for "%s", skipping\n' % compound)
+                continue
+        if len(res) > 1:
+            sys.stderr.write('Found %d exact matches for "%s", picking first one\n' % (len(res), compound))
+        print('\t'.join((compound, res[0]['molecule_chembl_id'])))
