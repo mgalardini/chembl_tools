@@ -21,8 +21,8 @@ def get_options():
                         type=int,
                         metavar='[0, 100]',
                         choices=[Range(0, 100)],
-                        default=0.9,
-                        help='Similarity threshold [Default: 90%]')
+                        default=90,
+                        help='Similarity threshold [Default: 90]')
 
     return parser.parse_args()
 
