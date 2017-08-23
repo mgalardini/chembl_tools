@@ -38,10 +38,34 @@ if __name__ == "__main__":
     chunk_size = 50
     keys = compounds2targets.keys()
 
+    ID_forms = dict()
+    for x in keys:
+        ID_forms[x] = set()
+    
     for i in range(0, len(keys), chunk_size):
-        activities = new_client.activity.filter(molecule_chembl_id__in=keys[i:i + chunk_size]).filter(target_organism__istartswith=options.organism)
+        for form in new_client.molecule_form.filter(parent_chembl_id__in=keys[i:i + chunk_size]):
+            ID_forms[form['parent_chembl_id']].add(form['molecule_chembl_id'])
+
+    for i in range(0, len(keys), chunk_size):
+        for form in new_client.molecule_form.filter(molecule_chembl_id__in=keys[i:i + chunk_size]):
+            ID_forms[form['molecule_chembl_id']].add(form['parent_chembl_id'])
+    
+    values = []
+    for x in ID_forms.values():
+        values.extend(x)
+    forms_to_ID = dict()
+    for x in values:
+        forms_to_ID[x] = set()
+    
+    for k in forms_to_ID:
+        for parent, molecule in ID_forms.items():
+            if k in molecule:
+                forms_to_ID[k] = parent
+
+    for i in range(0, len(values), chunk_size):
+        activities = new_client.activity.filter(molecule_chembl_id__in=values[i:i + chunk_size]).filter(target_organism__istartswith=options.organism)
         for act in activities:
-            compounds2targets[act['molecule_chembl_id']].add(act['target_chembl_id'])
+            compounds2targets[forms_to_ID[act['molecule_chembl_id']]].add(act['target_chembl_id'])
 
     for key, val in compounds2targets.items():
         lval = list(val)
