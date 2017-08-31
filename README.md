@@ -6,7 +6,7 @@ A series of scripts to make the most of the [ChEMBL API](https://github.com/chem
 prerequisites
 -------------
 
-* python 2.7+ (unfortunately the chembl client doesn't seem to work with python 3+)
+* python 2.7+, 3.3+
 * chembl_webresource_client
 
 example
