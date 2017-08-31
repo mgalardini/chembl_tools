@@ -5,7 +5,7 @@ def get_options():
 
     description = 'Retrieve IDs from CHEMBL IDs'
     parser = argparse.ArgumentParser(description=description,
-                                     prog='get_chembl_ids.py')
+                                     prog='get_chembl_ids')
 
     parser.add_argument('compounds', action='store',
                         help='Compound names input file')
@@ -20,10 +20,6 @@ if __name__ == "__main__":
     options = get_options()
 
     import sys
-    if sys.version[0] != '2':
-        sys.stderr.write('Python version 2 is required\n')
-        sys.exit(1)
-    
     from chembl_webresource_client.new_client import new_client
     
     molecule = new_client.molecule
