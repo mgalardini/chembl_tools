@@ -32,7 +32,7 @@ if __name__ == "__main__":
         compounds2targets[chembl] = set()
 
     chunk_size = 50
-    keys = compounds2targets.keys()
+    keys = list(compounds2targets.keys())
 
     ID_forms = dict()
     for x in keys:
