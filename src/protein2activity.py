@@ -27,16 +27,19 @@ if __name__ == "__main__":
         res = new_client.activity.filter(target_chembl_id__in=prots[i: i+chunk_size])
         if len(res) == 0:
             continue
-        n = pd.concat([pd.Series(x).to_frame().T for x in res])
-        if h:
-            n.to_csv(sys.stdout,
-                     sep='\t',
-                     header=True,
-                     index=False)
-            h = False
-        else:
-            n.to_csv(sys.stdout,
-                     sep='\t',
-                     header=False,
-                     index=False)
+        for j in range(0, len(res), 1000):
+            sys.stderr.write('%d/%d %d/%d\n' % (i, len(prots),
+                                                j, len(res)))
+            n = pd.concat([pd.Series(x).to_frame().T for x in res[j: j+100]])
+            if h:
+                n.to_csv(sys.stdout,
+                         sep='\t',
+                         header=True,
+                         index=False)
+                h = False
+            else:
+                n.to_csv(sys.stdout,
+                         sep='\t',
+                         header=False,
+                         index=False)
     sys.stderr.write('%d/%d\n' % (i, len(prots)))

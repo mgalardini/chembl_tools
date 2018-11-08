@@ -20,7 +20,9 @@ if __name__ == "__main__":
     
     m = pd.read_table(options.molecules)
     h = True
-    for mid in m['molecule_chembl_id'].unique():
+    total = len(m['molecule_chembl_id'].unique())
+    for i, mid in enumerate(m['molecule_chembl_id'].unique()):
+        sys.stderr.write('%d/%d %s\n' % (i, total, mid))
         res = new_client.molecule.get(mid)
         if len(res) == 0:
             continue

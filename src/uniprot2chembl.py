@@ -23,10 +23,10 @@ if __name__ == "__main__":
                      'target_chembl_id',
                      'type',
                      'name']))
-    for uid in uniprots:
+    for i, uid in enumerate(uniprots):
         if uid == '' or set(uid) == set(''):
             continue
-        sys.stderr.write('%s\n' % uid)
+        sys.stderr.write('%d/%d %s\n' % (i, len(uniprots), uid))
         records = new_client.target.filter(
                 target_components__accession=uid
                 )

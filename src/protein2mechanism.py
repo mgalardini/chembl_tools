@@ -20,7 +20,9 @@ if __name__ == "__main__":
     
     m = pd.read_table(options.proteins)
     h = True
-    for tid in m['target_chembl_id'].unique():
+    total = len(m['target_chembl_id'].unique())
+    for i, tid in enumerate(m['target_chembl_id'].unique()):
+        sys.stderr.write('%d/%d %s\n' % (i, total, tid))
         res = new_client.mechanism.filter(target_chembl_id__exact=tid)
         if len(res) == 0:
             continue
